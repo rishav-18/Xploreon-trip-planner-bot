@@ -8,8 +8,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <a href="/" className="text-2xl font-bold flex items-center mb-4">
-              <span className="text-travel-teal">Savvy</span>
-              <span className="text-white">Trip</span>
+              <span className="text-travel-teal">Xploreon</span>
             </a>
             <p className="text-gray-300 mb-6 max-w-md">
               AI-powered trip planning to help you create unforgettable travel experiences
@@ -22,7 +21,7 @@ const Footer = () => {
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
                 <Github size={20} />
               </a>
-              <a href="mailto:info@savvytrip.ai" className="text-gray-300 hover:text-white transition-colors">
+              <a href="mailto:info@xploreon.ai" className="text-gray-300 hover:text-white transition-colors">
                 <Mail size={20} />
               </a>
             </div>
@@ -50,7 +49,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-700 mt-10 pt-6 text-center text-gray-400 text-sm">
-          <p>© {new Date().getFullYear()} SavvyTrip. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Xploreon. All rights reserved.</p>
         </div>
       </div>
     </footer>

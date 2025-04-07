@@ -12,18 +12,20 @@ const Header = () => {
   
   return <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       {/* Registration Numbers Bar */}
-      <div className="bg-travel-teal text-white text-xs md:text-sm py-1 px-4 text-center">
+      <div className="bg-travel-teal text-white text-xs md:text-sm py-2 px-4">
         <div className="container mx-auto">
-          Reg. No: 12322768 | Roll No: 49 &nbsp;&nbsp;•&nbsp;&nbsp; 
-          Reg. No: 12310507 | Roll No: 61 &nbsp;&nbsp;•&nbsp;&nbsp; 
-          Reg. No: 12311905 | Roll No: 62
+          <div className="max-w-xs">
+            <div>Reg. No: 12322768 | Roll No: 49</div>
+            <div>Reg. No: 12310507 | Roll No: 61</div>
+            <div>Reg. No: 12311905 | Roll No: 62</div>
+          </div>
         </div>
       </div>
       
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <a href="/" className="text-2xl font-bold text-travel-blue flex items-center">
-            <span className="text-travel-teal">Xploreon</span>Trip
+          <a href="/" className="text-2xl font-bold text-travel-teal">
+            Xploreon
           </a>
         </div>
         

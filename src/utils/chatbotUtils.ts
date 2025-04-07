@@ -32,8 +32,7 @@ const currencySymbols: Record<string, string> = {
   TRY: '₺',
 };
 
-// Sample valid locations for basic validation
-// In a production environment, this would be replaced with an API call
+// Expanded list of valid locations for improved validation
 const popularDestinations = [
   'paris', 'tokyo', 'new york', 'london', 'rome', 'barcelona', 'sydney',
   'amsterdam', 'istanbul', 'dubai', 'singapore', 'bangkok', 'hong kong',
@@ -45,21 +44,64 @@ const popularDestinations = [
   'dublin', 'melbourne', 'queenstown', 'hawaii', 'zurich', 'munich',
   'copenhagen', 'oslo', 'stockholm', 'helsinki', 'reykjavik', 'bruges',
   'budapest', 'krakow', 'warsaw', 'milan', 'naples', 'malta', 'santorini',
-  'mykonos', 'istanbul'
+  'mykonos', 'istanbul', 'antalya', 'cancun', 'punta cana', 'maldives',
+  'dubai', 'abu dhabi', 'doha', 'macau', 'kuala lumpur', 'manila', 'jakarta',
+  'hanoi', 'ho chi minh city', 'phnom penh', 'yangon', 'kathmandu', 'lhasa',
+  'colombo', 'male', 'casablanca', 'tunis', 'algiers', 'dakar', 'nairobi',
+  'addis ababa', 'johannesburg', 'accra', 'lagos', 'havana', 'nassau',
+  'kingston', 'santo domingo', 'san juan', 'quito', 'lima', 'santiago',
+  'bogota', 'caracas', 'brasilia', 'montevideo', 'asuncion', 'la paz',
+  'guatemala city', 'panama city', 'san salvador', 'tegucigalpa', 'managua',
+  'san jose', 'new delhi', 'agra', 'jaipur', 'varanasi', 'kolkata', 'chennai',
+  'goa', 'bengaluru', 'hyderabad', 'ahmedabad', 'siem reap', 'vientiane',
+  'luang prabang', 'chiang mai', 'pattaya', 'koh samui', 'boracay', 'palawan',
+  'cebu', 'jeju', 'okinawa', 'osaka', 'sapporo', 'kyoto', 'hiroshima',
+  'busan', 'taipei', 'kaohsiung', 'queensland', 'perth', 'adelaide',
+  'tasmania', 'auckland', 'wellington', 'christchurch', 'queenstown',
+  'fiji', 'tahiti', 'honolulu', 'seattle', 'portland', 'las vegas',
+  'denver', 'boston', 'washington dc', 'philadelphia', 'atlanta',
+  'orlando', 'new orleans', 'houston', 'dallas', 'phoenix', 'salt lake city',
+  'vancouver', 'montreal', 'quebec city', 'calgary', 'edmonton', 'ottawa',
+  'halifax', 'winnipeg', 'yellowknife', 'seville', 'valencia', 'granada',
+  'porto', 'marseille', 'nice', 'lyon', 'strasbourg', 'bordeaux',
+  'brussels', 'antwerp', 'rotterdam', 'hamburg', 'cologne', 'frankfurt',
+  'stuttgart', 'salzburg', 'innsbruck', 'graz', 'ljubljana', 'zagreb',
+  'belgrade', 'sarajevo', 'sofia', 'bucharest', 'chisinau', 'kyiv',
+  'odesa', 'minsk', 'tallinn', 'riga', 'vilnius', 'gdansk', 'poznan',
+  'bratislava', 'brno', 'pilsen', 'kosice', 'graz', 'linz', 'salzburg',
+  'geneva', 'lausanne', 'turin', 'bologna', 'verona', 'palermo',
+  'syracuse', 'valletta', 'dubrovnik', 'split', 'zadar', 'pula',
+  'thessaloniki', 'heraklion', 'rhodes', 'corfu', 'kosice'
 ];
 
-// Simple location validation
+// Improved location validation with fuzzy matching
 const isValidLocation = (location: string): boolean => {
-  // Basic validation - would be replaced with more sophisticated validation in production
-  if (!location || typeof location !== 'string') return false;
+  if (!location || typeof location !== 'string' || location.trim().length < 2) {
+    return false;
+  }
   
-  const normalizedLocation = location.toLowerCase().trim();
+  const normalizedInput = location.toLowerCase().trim();
   
-  // Check against our list of known destinations
-  return popularDestinations.some(destination => 
-    normalizedLocation.includes(destination) ||
-    destination.includes(normalizedLocation)
-  );
+  // Direct match
+  if (popularDestinations.includes(normalizedInput)) {
+    return true;
+  }
+  
+  // Partial matching - more permissive to avoid false negatives
+  for (const destination of popularDestinations) {
+    // Check if the destination contains the input or vice versa
+    // This helps with partial names like "york" matching "new york"
+    if (normalizedInput.includes(destination) || 
+        destination.includes(normalizedInput) ||
+        // For multi-word locations (e.g., "new york")
+        (destination.includes(' ') && 
+         destination.split(' ').some(word => 
+           normalizedInput.includes(word) && word.length > 2))) {
+      return true;
+    }
+  }
+  
+  return false;
 };
 
 // Track the state of the conversation
@@ -112,10 +154,10 @@ export const processUserInput = async (
   if (!conversationState.destination && !conversationState.hasAskedDestination) {
     const possibleDestination = userMessage.trim();
     
-    // Validate the location
+    // Improved validation with better error handling
     if (!isValidLocation(possibleDestination)) {
       conversationState.hasAskedDestination = false; // Allow them to try again
-      return "Sorry, I couldn't find that location. Please check the spelling or try a different place.";
+      return "Sorry, I couldn't find that location. Please check the spelling or try a different place. You can enter cities like Paris, New York, Tokyo, or Bangkok.";
     }
     
     conversationState.destination = possibleDestination;
