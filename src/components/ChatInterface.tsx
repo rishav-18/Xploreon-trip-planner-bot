@@ -62,7 +62,7 @@ const ChatInterface = () => {
   
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col h-[600px] md:h-[700px]">
-      <div className="bg-travel-blue text-white p-4">
+      <div className="bg-travel-green text-white p-4">
         <h2 className="text-xl font-semibold">AI Trip Planner</h2>
       </div>
       
@@ -102,7 +102,7 @@ const ChatInterface = () => {
           <Button 
             onClick={handleSendMessage} 
             disabled={isLoading || !input.trim()}
-            className="bg-travel-blue hover:bg-travel-teal transition-colors"
+            className="bg-travel-green hover:bg-travel-yellow hover:text-travel-dark transition-colors"
           >
             <Send size={18} />
           </Button>

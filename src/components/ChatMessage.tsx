@@ -22,9 +22,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isUser, isLoading = 
       )}>
         {isLoading ? (
           <div className="flex items-center space-x-2">
-            <div className="h-2 w-2 bg-travel-teal/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-            <div className="h-2 w-2 bg-travel-teal/60 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-            <div className="h-2 w-2 bg-travel-teal/60 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+            <div className="h-2 w-2 bg-travel-green/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
+            <div className="h-2 w-2 bg-travel-green/60 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
+            <div className="h-2 w-2 bg-travel-green/60 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
           </div>
         ) : (
           <div className="whitespace-pre-wrap">{message}</div>

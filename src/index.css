@@ -5,33 +5,33 @@
 
 @layer base {
   :root {
-    --background: 210 50% 98%;
-    --foreground: 215 25% 27%;
+    --background: 60 30% 98%;
+    --foreground: 196 38% 25%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 196 38% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 196 38% 25%;
 
-    --primary: 217 91.2% 59.8%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 150 50% 36%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 199 89% 48%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 45 100% 51%;
+    --secondary-foreground: 196 38% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 60 30% 96%;
+    --muted-foreground: 196 20% 45%;
 
-    --accent: 38 92% 50%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 45 100% 51%;
+    --accent-foreground: 196 38% 25%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 196 15% 90%;
+    --input: 196 15% 90%;
+    --ring: 150 50% 36%;
 
     --radius: 0.75rem;
   }
@@ -70,7 +70,7 @@
   }
   
   .message-user {
-    @apply bg-travel-blue text-white;
+    @apply bg-travel-green text-white;
     border-top-right-radius: 0;
   }
   
