@@ -64,11 +64,13 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				travel: {
-					green: '#2E8B57',
-					yellow: '#FFC107',
-					light: '#FAFAFA',
-					dark: '#2F4F4F',
-					accent: '#FFC107'
+					blue: '#1EAEDB', // Ocean blue color
+					teal: '#2E8B57', // Forest green color for the theme
+					yellow: '#FFC107', // Mustard yellow accent color
+					light: '#FAFAFA', // Off-white background color
+					dark: '#2F4F4F', // Dark slate text color
+					green: '#2E8B57', // Same as teal for consistency
+					accent: '#FFC107' // Same as yellow for consistency
 				}
 			},
 			borderRadius: {
