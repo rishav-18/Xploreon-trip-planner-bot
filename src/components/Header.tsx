@@ -1,15 +1,11 @@
-
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  
   return <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       {/* Registration Numbers Bar */}
       <div className="bg-travel-teal text-white text-xs md:text-sm py-2 px-4">
@@ -31,8 +27,8 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
-          <a href="#features" className="text-travel-dark hover:text-travel-blue transition-colors">Features</a>
-          <a href="#how-it-works" className="text-travel-dark hover:text-travel-blue transition-colors mx-[25px]">How It Works</a>
+          <a href="#features" className="text-travel-dark hover:text-travel-blue transition-colors py-[9px]">Features</a>
+          <a href="#how-it-works" className="text-travel-dark hover:text-travel-blue transition-colors mx-[25px] py-[9px]">How It Works</a>
           <Button className="bg-travel-blue hover:bg-travel-teal text-white transition-colors">
             Start Planning
           </Button>
@@ -67,5 +63,4 @@ const Header = () => {
         </div>}
     </header>;
 };
-
 export default Header;
