@@ -43,14 +43,6 @@ const Hero = () => {
                   className="w-full h-auto"
                 />
               </div>
-              <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg max-w-[200px] animate-bounce-in">
-                <div className="text-travel-dark font-medium">
-                  "Amazing trip to Tokyo planned in minutes!"
-                </div>
-                <div className="text-gray-500 text-sm mt-1">
-                  - Sarah P.
-                </div>
-              </div>
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
           <a href="/" className="text-2xl font-bold text-travel-blue flex items-center">
-            <span className="text-travel-teal">Savvy</span>Trip
+            <span className="text-travel-teal">Xploreon</span>Trip
           </a>
         </div>
         
@@ -18,7 +19,6 @@ const Header = () => {
         <nav className="hidden md:flex space-x-8">
           <a href="#features" className="text-travel-dark hover:text-travel-blue transition-colors">Features</a>
           <a href="#how-it-works" className="text-travel-dark hover:text-travel-blue transition-colors mx-[25px]">How It Works</a>
-          <a href="#testimonials" className="text-travel-dark hover:text-travel-blue transition-colors">Testimonials</a>
           <Button className="bg-travel-blue hover:bg-travel-teal text-white transition-colors">
             Start Planning
           </Button>
@@ -40,9 +40,6 @@ const Header = () => {
             </a>
             <a href="#how-it-works" className="text-travel-dark hover:text-travel-blue transition-colors py-2 px-4" onClick={toggleMenu}>
               How It Works
-            </a>
-            <a href="#testimonials" className="text-travel-dark hover:text-travel-blue transition-colors py-2 px-4" onClick={toggleMenu}>
-              Testimonials
             </a>
             <Button className="bg-travel-blue hover:bg-travel-teal text-white transition-colors w-full" onClick={() => {
           toggleMenu();

@@ -32,6 +32,36 @@ const currencySymbols: Record<string, string> = {
   TRY: '₺',
 };
 
+// Sample valid locations for basic validation
+// In a production environment, this would be replaced with an API call
+const popularDestinations = [
+  'paris', 'tokyo', 'new york', 'london', 'rome', 'barcelona', 'sydney',
+  'amsterdam', 'istanbul', 'dubai', 'singapore', 'bangkok', 'hong kong',
+  'seoul', 'los angeles', 'san francisco', 'chicago', 'miami', 'berlin',
+  'vienna', 'prague', 'athens', 'venice', 'florence', 'madrid', 'lisbon',
+  'cairo', 'marrakech', 'cape town', 'rio de janeiro', 'buenos aires',
+  'mexico city', 'toronto', 'vancouver', 'kyoto', 'bali', 'phuket', 'delhi',
+  'mumbai', 'shanghai', 'beijing', 'moscow', 'st petersburg', 'edinburgh',
+  'dublin', 'melbourne', 'queenstown', 'hawaii', 'zurich', 'munich',
+  'copenhagen', 'oslo', 'stockholm', 'helsinki', 'reykjavik', 'bruges',
+  'budapest', 'krakow', 'warsaw', 'milan', 'naples', 'malta', 'santorini',
+  'mykonos', 'istanbul'
+];
+
+// Simple location validation
+const isValidLocation = (location: string): boolean => {
+  // Basic validation - would be replaced with more sophisticated validation in production
+  if (!location || typeof location !== 'string') return false;
+  
+  const normalizedLocation = location.toLowerCase().trim();
+  
+  // Check against our list of known destinations
+  return popularDestinations.some(destination => 
+    normalizedLocation.includes(destination) ||
+    destination.includes(normalizedLocation)
+  );
+};
+
 // Track the state of the conversation
 let conversationState: {
   destination?: string;
@@ -49,13 +79,15 @@ let conversationState: {
   hasAskedBudget: boolean;
   hasAskedPreferences: boolean;
   itineraryGenerated: boolean;
+  processingUserQuery: boolean;
 } = {
   hasAskedDestination: false,
   hasAskedDays: false,
   hasAskedDates: false,
   hasAskedBudget: false,
   hasAskedPreferences: false,
-  itineraryGenerated: false
+  itineraryGenerated: false,
+  processingUserQuery: false
 };
 
 // Process user input and generate responses
@@ -66,11 +98,29 @@ export const processUserInput = async (
   // In a real implementation, we would send the user message to an AI API
   // For now, we'll simulate the conversation flow
   
+  // If we're processing a follow-up query
+  if (conversationState.processingUserQuery) {
+    conversationState.processingUserQuery = false;
+    
+    // This helps break out of potential loops with vague responses
+    if (userMessage.length > 5) {
+      return `Thanks for providing that information! As your Xploreon travel assistant, I can help you with specific travel plans for ${conversationState.destination || "your destination"}. Would you like me to suggest some activities, accommodations, or transportation options?`;
+    }
+  }
+  
   // Extract information from user message based on current conversation state
   if (!conversationState.destination && !conversationState.hasAskedDestination) {
-    conversationState.destination = userMessage;
+    const possibleDestination = userMessage.trim();
+    
+    // Validate the location
+    if (!isValidLocation(possibleDestination)) {
+      conversationState.hasAskedDestination = false; // Allow them to try again
+      return "Sorry, I couldn't find that location. Please check the spelling or try a different place.";
+    }
+    
+    conversationState.destination = possibleDestination;
     conversationState.hasAskedDestination = true;
-    return `Great! I see you want to visit ${userMessage}. How many days are you planning to stay?`;
+    return `Great! I see you want to visit ${possibleDestination}. How many days are you planning to stay?`;
   }
 
   if (!conversationState.tripDays && conversationState.hasAskedDestination && !conversationState.hasAskedDays) {
@@ -79,7 +129,8 @@ export const processUserInput = async (
     if (daysMatch) {
       conversationState.tripDays = parseInt(daysMatch[0]);
     } else {
-      conversationState.tripDays = 5; // Default if we can't extract a number
+      // If we can't extract a number, ask again
+      return "I need to know how many days you plan to stay so I can create a suitable itinerary. Please provide a number (e.g., '5 days').";
     }
     conversationState.hasAskedDays = true;
     return `Perfect! ${conversationState.tripDays} days in ${conversationState.destination} sounds great. When are you planning to go? Please provide your travel dates (e.g., "June 15-22, 2023").`;
@@ -141,12 +192,15 @@ export const processUserInput = async (
       return "I can provide more detailed accommodation recommendations. What's your preferred type of accommodation (hotel, resort, hostel, Airbnb), and do you have any specific requirements or preferences for your stay?";
     }
     
-    // Default response for other questions
-    return "I'd be happy to help with that. Could you provide more details about what you're looking for?";
+    // Set flag to process next query properly
+    conversationState.processingUserQuery = true;
+    
+    // More specific response for other questions
+    return "I can help with that. Could you please provide more specific details about what you're looking for regarding your trip to " + conversationState.destination + "?";
   }
   
   // Default response if the conversation flow doesn't match any expected pattern
-  return "I'm sorry, I didn't quite understand. Could you please rephrase that?";
+  return "I'm sorry, I didn't quite understand. Could you please rephrase that or let me know exactly what you're looking for with your trip planning?";
 };
 
 // Generate a personalized itinerary based on user preferences
@@ -168,46 +222,63 @@ Based on your preferences, here's a personalized ${days}-day itinerary for ${des
 
 `;
 
+  // Calculate reasonable budget allocations
+  const totalBudgetText = budget.match(/[\d,]+/) ? budget.match(/[\d,]+/)?.[0] : "1000";
+  const totalBudget = parseInt(totalBudgetText?.replace(/,/g, '') || "1000");
+  
+  // Adjust for currency (very simplistic - would use real rates in production)
+  const dailyBudget = (totalBudget / days);
+  const accommodationPerDay = dailyBudget * 0.4; // 40% for accommodation
+  const foodPerDay = dailyBudget * 0.3; // 30% for food
+  const activitiesPerDay = dailyBudget * 0.2; // 20% for activities
+  const transportPerDay = dailyBudget * 0.1; // 10% for transport
+
   // Generate itinerary for each day
   for (let day = 1; day <= days; day++) {
     let dayActivities;
     
     if (day === 1) {
       dayActivities = `✈️ **DAY 1: ARRIVAL & ORIENTATION**
-* Morning: Arrival and check-in at accommodation
+* Morning: Arrival and check-in at accommodation (${currencySymbol}${Math.round(accommodationPerDay)})
 * Afternoon: Orientation walk around the city center
-* Evening: Welcome dinner at a local restaurant (${currencySymbol}30-50)`;
+* Evening: Welcome dinner at a local restaurant (${currencySymbol}${Math.round(foodPerDay * 0.4)})
+* Daily budget allocation: ${currencySymbol}${Math.round(dailyBudget)}`;
     } else if (day === days) {
       dayActivities = `🏝️ **DAY ${day}: RELAXATION & DEPARTURE**
 * Morning: Free time for last-minute activities
-* Lunch: Light meal before departure (${currencySymbol}15-25)
-* Afternoon: Departure`;
+* Lunch: Light meal before departure (${currencySymbol}${Math.round(foodPerDay * 0.3)})
+* Afternoon: Departure
+* Daily budget allocation: ${currencySymbol}${Math.round(dailyBudget)}`;
     } else {
       // For middle days, rotate between different types of activities
       const dayTypes = [
         {
           emoji: "🏛️",
           title: "CULTURAL EXPLORATION",
-          activities: `* Morning: Visit to main historical sites and museums
-* Lunch: Local street food experience (${currencySymbol}10-15)
-* Afternoon: Guided cultural tour
-* Evening: Dinner with traditional entertainment (${currencySymbol}40-60)`
+          activities: `* Morning: Visit to main historical sites and museums (${currencySymbol}${Math.round(activitiesPerDay * 0.5)})
+* Lunch: Local street food experience (${currencySymbol}${Math.round(foodPerDay * 0.3)})
+* Afternoon: Guided cultural tour (${currencySymbol}${Math.round(activitiesPerDay * 0.5)})
+* Evening: Dinner with traditional entertainment (${currencySymbol}${Math.round(foodPerDay * 0.7)})
+* Daily budget allocation: ${currencySymbol}${Math.round(dailyBudget)}`
         },
         {
           emoji: "🌄",
           title: "OUTDOOR ADVENTURES",
-          activities: `* Morning: Hiking/nature excursion to nearby natural attractions
-* Packed lunch during excursion (${currencySymbol}10)
+          activities: `* Morning: Hiking/nature excursion to nearby natural attractions (${currencySymbol}${Math.round(activitiesPerDay * 0.4)})
+* Packed lunch during excursion (${currencySymbol}${Math.round(foodPerDay * 0.2)})
 * Afternoon: Continue exploration or relaxation time
-* Evening: Casual dining with sunset views (${currencySymbol}25-40)`
+* Evening: Casual dining with sunset views (${currencySymbol}${Math.round(foodPerDay * 0.5)})
+* Transportation for the day: (${currencySymbol}${Math.round(transportPerDay)})
+* Daily budget allocation: ${currencySymbol}${Math.round(dailyBudget)}`
         },
         {
           emoji: "🛍️",
           title: "LOCAL EXPERIENCES",
           activities: `* Morning: Local market visit and shopping
-* Lunch: Food tour with tastings (${currencySymbol}20-30)
-* Afternoon: Workshop or cooking class
-* Evening: Dinner at recommended local favorite (${currencySymbol}30-50)`
+* Lunch: Food tour with tastings (${currencySymbol}${Math.round(foodPerDay * 0.4)})
+* Afternoon: Workshop or cooking class (${currencySymbol}${Math.round(activitiesPerDay * 0.6)})
+* Evening: Dinner at recommended local favorite (${currencySymbol}${Math.round(foodPerDay * 0.6)})
+* Daily budget allocation: ${currencySymbol}${Math.round(dailyBudget)}`
         }
       ];
       
@@ -221,16 +292,16 @@ ${dayType.activities}`;
   
   // Add accommodation and budget information
   itinerary += `**ACCOMMODATIONS:**
-Based on your ${budget} budget, I recommend:
-* Mid-range hotel in the city center: ${currencySymbol}80-120/night
-* Boutique guesthouse with character: ${currencySymbol}60-90/night
-* Budget-friendly hostel or shared accommodation: ${currencySymbol}30-50/night
+Based on your ${budget} budget for ${days} days:
+* Mid-range hotel in the city center: ${currencySymbol}${Math.round(accommodationPerDay)} per night
+* Boutique guesthouse with character: ${currencySymbol}${Math.round(accommodationPerDay * 0.8)} per night
+* Budget-friendly hostel or shared accommodation: ${currencySymbol}${Math.round(accommodationPerDay * 0.5)} per night
 
 **TRANSPORTATION:**
-* Airport to city center: ${currencySymbol}20-35 one way
-* Local transportation: ${currencySymbol}5-15 per day
+* Airport to city center: ${currencySymbol}${Math.round(transportPerDay * 2)} one way
+* Local transportation: ${currencySymbol}${Math.round(transportPerDay)} per day
 
-**TOTAL BUDGET ESTIMATE:** ${currencySymbol}${650 + (days - 5) * 100}-${950 + (days - 5) * 150} per person (excluding flights)
+**TOTAL BUDGET ESTIMATE:** ${currencySymbol}${Math.round(dailyBudget * days)} for ${days} days
 
 Would you like me to adjust any part of this itinerary or provide more specific recommendations for any day?`;
   

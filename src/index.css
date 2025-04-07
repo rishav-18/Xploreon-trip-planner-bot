@@ -70,7 +70,7 @@
   }
   
   .message-user {
-    @apply bg-travel-green text-white;
+    @apply bg-travel-blue text-white;
     border-top-right-radius: 0;
   }
   
