@@ -1,20 +1,22 @@
+
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
   return <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       {/* Registration Numbers Bar */}
       <div className="bg-travel-teal text-white text-xs md:text-sm py-2 px-4">
         <div className="container mx-auto">
-          <div className="max-w-xs">
-            <div>Reg. No: 12322768 | Roll No: 49</div>
-            <div>Reg. No: 12310507 | Roll No: 61</div>
-            <div>Reg. No: 12311905 | Roll No: 62</div>
-          </div>
+          <div>Reg. No: 12322768 | Roll No: 49</div>
+          <div>Reg. No: 12310507 | Roll No: 61</div>
+          <div>Reg. No: 12311905 | Roll No: 62</div>
         </div>
       </div>
       
@@ -63,4 +65,5 @@ const Header = () => {
         </div>}
     </header>;
 };
+
 export default Header;

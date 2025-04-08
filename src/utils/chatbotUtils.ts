@@ -32,49 +32,8 @@ const currencySymbols: Record<string, string> = {
   TRY: '₺',
 };
 
-// Expanded list of valid locations for improved validation
-const popularDestinations = [
-  'paris', 'tokyo', 'new york', 'london', 'rome', 'barcelona', 'sydney',
-  'amsterdam', 'istanbul', 'dubai', 'singapore', 'bangkok', 'hong kong',
-  'seoul', 'los angeles', 'san francisco', 'chicago', 'miami', 'berlin',
-  'vienna', 'prague', 'athens', 'venice', 'florence', 'madrid', 'lisbon',
-  'cairo', 'marrakech', 'cape town', 'rio de janeiro', 'buenos aires',
-  'mexico city', 'toronto', 'vancouver', 'kyoto', 'bali', 'phuket', 'delhi',
-  'mumbai', 'shanghai', 'beijing', 'moscow', 'st petersburg', 'edinburgh',
-  'dublin', 'melbourne', 'queenstown', 'hawaii', 'zurich', 'munich',
-  'copenhagen', 'oslo', 'stockholm', 'helsinki', 'reykjavik', 'bruges',
-  'budapest', 'krakow', 'warsaw', 'milan', 'naples', 'malta', 'santorini',
-  'mykonos', 'istanbul', 'antalya', 'cancun', 'punta cana', 'maldives',
-  'dubai', 'abu dhabi', 'doha', 'macau', 'kuala lumpur', 'manila', 'jakarta',
-  'hanoi', 'ho chi minh city', 'phnom penh', 'yangon', 'kathmandu', 'lhasa',
-  'colombo', 'male', 'casablanca', 'tunis', 'algiers', 'dakar', 'nairobi',
-  'addis ababa', 'johannesburg', 'accra', 'lagos', 'havana', 'nassau',
-  'kingston', 'santo domingo', 'san juan', 'quito', 'lima', 'santiago',
-  'bogota', 'caracas', 'brasilia', 'montevideo', 'asuncion', 'la paz',
-  'guatemala city', 'panama city', 'san salvador', 'tegucigalpa', 'managua',
-  'san jose', 'new delhi', 'agra', 'jaipur', 'varanasi', 'kolkata', 'chennai',
-  'goa', 'bengaluru', 'hyderabad', 'ahmedabad', 'siem reap', 'vientiane',
-  'luang prabang', 'chiang mai', 'pattaya', 'koh samui', 'boracay', 'palawan',
-  'cebu', 'jeju', 'okinawa', 'osaka', 'sapporo', 'kyoto', 'hiroshima',
-  'busan', 'taipei', 'kaohsiung', 'queensland', 'perth', 'adelaide',
-  'tasmania', 'auckland', 'wellington', 'christchurch', 'queenstown',
-  'fiji', 'tahiti', 'honolulu', 'seattle', 'portland', 'las vegas',
-  'denver', 'boston', 'washington dc', 'philadelphia', 'atlanta',
-  'orlando', 'new orleans', 'houston', 'dallas', 'phoenix', 'salt lake city',
-  'vancouver', 'montreal', 'quebec city', 'calgary', 'edmonton', 'ottawa',
-  'halifax', 'winnipeg', 'yellowknife', 'seville', 'valencia', 'granada',
-  'porto', 'marseille', 'nice', 'lyon', 'strasbourg', 'bordeaux',
-  'brussels', 'antwerp', 'rotterdam', 'hamburg', 'cologne', 'frankfurt',
-  'stuttgart', 'salzburg', 'innsbruck', 'graz', 'ljubljana', 'zagreb',
-  'belgrade', 'sarajevo', 'sofia', 'bucharest', 'chisinau', 'kyiv',
-  'odesa', 'minsk', 'tallinn', 'riga', 'vilnius', 'gdansk', 'poznan',
-  'bratislava', 'brno', 'pilsen', 'kosice', 'graz', 'linz', 'salzburg',
-  'geneva', 'lausanne', 'turin', 'bologna', 'verona', 'palermo',
-  'syracuse', 'valletta', 'dubrovnik', 'split', 'zadar', 'pula',
-  'thessaloniki', 'heraklion', 'rhodes', 'corfu', 'kosice'
-];
-
-// Improved location validation with fuzzy matching
+// This is a simplified approach - in a real app, we would use a proper geocoding API
+// The isValidLocation function now uses a more permissive approach to avoid false negatives
 const isValidLocation = (location: string): boolean => {
   if (!location || typeof location !== 'string' || location.trim().length < 2) {
     return false;
@@ -82,26 +41,32 @@ const isValidLocation = (location: string): boolean => {
   
   const normalizedInput = location.toLowerCase().trim();
   
-  // Direct match
-  if (popularDestinations.includes(normalizedInput)) {
-    return true;
-  }
+  // For this demo, we'll assume most inputs are valid locations
+  // But reject obviously invalid inputs like single letters, numbers, or special characters
+  const invalidPatterns = [
+    /^[0-9]+$/, // just numbers
+    /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/, // just special characters
+    /^[a-z]$/ // single letter
+  ];
   
-  // Partial matching - more permissive to avoid false negatives
-  for (const destination of popularDestinations) {
-    // Check if the destination contains the input or vice versa
-    // This helps with partial names like "york" matching "new york"
-    if (normalizedInput.includes(destination) || 
-        destination.includes(normalizedInput) ||
-        // For multi-word locations (e.g., "new york")
-        (destination.includes(' ') && 
-         destination.split(' ').some(word => 
-           normalizedInput.includes(word) && word.length > 2))) {
-      return true;
+  for (const pattern of invalidPatterns) {
+    if (pattern.test(normalizedInput)) {
+      return false;
     }
   }
   
-  return false;
+  // Filter out common non-location inputs
+  const nonLocationKeywords = [
+    'hello', 'hi', 'hey', 'test', 'help', 'what', 'how', 'why', 'when', 'who', 
+    'where', 'which', 'yes', 'no', 'maybe', 'ok', 'okay', 'thanks', 'thank', 
+    'please', 'sorry', 'excuse', 'good', 'bad', 'hello', 'bye'
+  ];
+  
+  if (nonLocationKeywords.includes(normalizedInput)) {
+    return false;
+  }
+  
+  return true;
 };
 
 // Track the state of the conversation
@@ -137,9 +102,6 @@ export const processUserInput = async (
   userMessage: string,
   messages: Message[]
 ): Promise<string> => {
-  // In a real implementation, we would send the user message to an AI API
-  // For now, we'll simulate the conversation flow
-  
   // If we're processing a follow-up query
   if (conversationState.processingUserQuery) {
     conversationState.processingUserQuery = false;
@@ -157,7 +119,7 @@ export const processUserInput = async (
     // Improved validation with better error handling
     if (!isValidLocation(possibleDestination)) {
       conversationState.hasAskedDestination = false; // Allow them to try again
-      return "Sorry, I couldn't find that location. Please check the spelling or try a different place. You can enter cities like Paris, New York, Tokyo, or Bangkok.";
+      return "Sorry, I couldn't find that location. Please enter a valid city name like Paris, New York, Tokyo, or Bangkok.";
     }
     
     conversationState.destination = possibleDestination;
@@ -275,6 +237,9 @@ Based on your preferences, here's a personalized ${days}-day itinerary for ${des
   const activitiesPerDay = dailyBudget * 0.2; // 20% for activities
   const transportPerDay = dailyBudget * 0.1; // 10% for transport
 
+  // Add destination image suggestion (in a real app, this would be an API call)
+  itinerary += `![Beautiful view of ${destination}](https://source.unsplash.com/featured/?${encodeURIComponent(destination)},travel)\n\n`;
+
   // Generate itinerary for each day
   for (let day = 1; day <= days; day++) {
     let dayActivities;
@@ -344,6 +309,8 @@ Based on your ${budget} budget for ${days} days:
 * Local transportation: ${currencySymbol}${Math.round(transportPerDay)} per day
 
 **TOTAL BUDGET ESTIMATE:** ${currencySymbol}${Math.round(dailyBudget * days)} for ${days} days
+
+![Another view of ${destination}](https://source.unsplash.com/featured/?${encodeURIComponent(destination)},landmark)
 
 Would you like me to adjust any part of this itinerary or provide more specific recommendations for any day?`;
   
